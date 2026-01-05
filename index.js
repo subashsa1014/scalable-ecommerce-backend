@@ -14,6 +14,12 @@ app.use(express.json());
 const DEFAULT_RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 const DEFAULT_RATE_LIMIT_MAX_REQUESTS = 100;
 
+/**
+ * Validate and sanitize CORS origins from comma-separated input.
+ * Accepts well-formed URLs or a wildcard entry ("*"); invalid entries are discarded.
+ * @param {string[]} origins - Raw origin strings from the environment variable.
+ * @returns {string[]} Sanitized list of origins or an empty array.
+ */
 const sanitizeOrigins = (origins) =>
   origins
     .map((origin) => origin.trim())
@@ -44,6 +50,12 @@ app.use(
 app.use(helmet());
 app.use(morgan('dev'));
 
+/**
+ * Convert a value to a finite positive number, or return the provided fallback.
+ * @param {string | number | undefined} value - The input to parse.
+ * @param {number} fallback - Value used when parsing fails or the number is not positive.
+ * @returns {number} A positive number suitable for configuration values.
+ */
 const parsePositiveNumber = (value, fallback) => {
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
