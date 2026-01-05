@@ -36,4 +36,6 @@ env:
   REDIS_URL: "redis://redis:6379"
 
 secrets:
-  jwtSecret: "REPLACE_WITH_REAL_SECRET"
+  # IMPORTANT: Replace with a strong, randomly generated secret before deployment
+  # Example: openssl rand -base64 32
+  jwtSecret: ""

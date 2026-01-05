@@ -17,7 +17,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\"email\":\"demo@example.com\",\"password\":\"P@ssw0rd\",\"name\":\"Demo User\"}"
+          "raw": "{\"email\":\"demo@example.com\",\"password\":\"{{password}}\",\"name\":\"Demo User\"}"
         },
         "url": {
           "raw": "https://example.com/api/v1/auth/register",
@@ -32,7 +32,7 @@
       "request": {
         "method": "POST",
         "header": [{"key":"Content-Type","value":"application/json"}],
-        "body": {"mode":"raw","raw":"{\"email\":\"demo@example.com\",\"password\":\"P@ssw0rd\"}"},
+        "body": {"mode":"raw","raw":"{\"email\":\"demo@example.com\",\"password\":\"{{password}}\"}"},
         "url": {"raw":"https://example.com/api/v1/auth/login","protocol":"https","host":["example","com"],"path":["api","v1","auth","login"]}
       },
       "event": [
