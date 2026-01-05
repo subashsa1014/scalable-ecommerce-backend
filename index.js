@@ -16,13 +16,20 @@ const allowedOrigins = (process.env.CORS_ORIGIN || '')
   .map((origin) => origin.trim())
   .filter(Boolean);
 
-app.use(cors({ origin: allowedOrigins.length ? allowedOrigins : '*' }));
+app.use(
+  cors({
+    origin: allowedOrigins.length ? allowedOrigins : ['http://localhost:3000'],
+  }),
+);
 app.use(helmet());
 app.use(morgan('dev'));
 
+const windowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10);
+const maxRequests = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10);
+
 const limiter = rateLimit({
-  windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
-  max: Number(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
+  windowMs: Number.isFinite(windowMs) ? windowMs : 15 * 60 * 1000,
+  max: Number.isFinite(maxRequests) ? maxRequests : 100,
 });
 app.use(limiter);
 
