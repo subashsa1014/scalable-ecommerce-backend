@@ -1,0 +1,147 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6.0
+    container_name: ecommerce-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      MONGO_INITDB_DATABASE: ecommerce
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: ecommerce-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ecommerce-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API Gateway Service
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: ecommerce-api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      NODE_ENV: development
+      MONGODB_URI: mongodb://admin:admin123@mongodb:27017/ecommerce
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+    volumes:
+      - ./api-gateway:/app
+    restart: unless-stopped
+
+  # User Service
+  user-service:
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile
+    container_name: ecommerce-user-service
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      NODE_ENV: development
+      MONGODB_URI: mongodb://admin:admin123@mongodb:27017/ecommerce
+      REDIS_HOST: redis
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # Product Service
+  product-service:
+    build:
+      context: ./services/product-service
+      dockerfile: Dockerfile
+    container_name: ecommerce-product-service
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: 3002
+      NODE_ENV: development
+      MONGODB_URI: mongodb://admin:admin123@mongodb:27017/ecommerce
+      REDIS_HOST: redis
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # Order Service
+  order-service:
+    build:
+      context: ./services/order-service
+      dockerfile: Dockerfile
+    container_name: ecommerce-order-service
+    ports:
+      - "3003:3003"
+    environment:
+      PORT: 3003
+      NODE_ENV: development
+      MONGODB_URI: mongodb://admin:admin123@mongodb:27017/ecommerce
+      REDIS_HOST: redis
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+  # Payment Service
+  payment-service:
+    build:
+      context: ./services/payment-service
+      dockerfile: Dockerfile
+    container_name: ecommerce-payment-service
+    ports:
+      - "3004:3004"
+    environment:
+      PORT: 3004
+      NODE_ENV: development
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+  redis_data:
+
+networks:
+  ecommerce-network:
+    driver: bridge
