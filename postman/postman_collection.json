@@ -1,0 +1,75 @@
+{
+  "info": {
+    "name": "E-Commerce Demo Collection",
+    "_postman_id": "ecommerce-demo-collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\":\"demo@example.com\",\"password\":\"{{password}}\",\"name\":\"Demo User\"}"
+        },
+        "url": {
+          "raw": "https://example.com/api/v1/auth/register",
+          "protocol": "https",
+          "host": ["example","com"],
+          "path": ["api","v1","auth","register"]
+        }
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{"key":"Content-Type","value":"application/json"}],
+        "body": {"mode":"raw","raw":"{\"email\":\"demo@example.com\",\"password\":\"{{password}}\"}"},
+        "url": {"raw":"https://example.com/api/v1/auth/login","protocol":"https","host":["example","com"],"path":["api","v1","auth","login"]}
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var json = pm.response.json();",
+              "pm.environment.set(\"authToken\", json.token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "List Products",
+      "request": {
+        "method": "GET",
+        "header": [{"key":"Authorization","value":"Bearer {{authToken}}"}],
+        "url": {"raw":"https://example.com/api/v1/products","protocol":"https","host":["example","com"],"path":["api","v1","products"]}
+      }
+    },
+    {
+      "name": "Create Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key":"Content-Type","value":"application/json"},
+          {"key":"Authorization","value":"Bearer {{authToken}}"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"items\":[{\"productId\":\"prod_123\",\"quantity\":1}],\"address\":\"123 Demo St\"}"
+        },
+        "url": {"raw":"https://example.com/api/v1/orders","protocol":"https","host":["example","com"],"path":["api","v1","orders"]}
+      }
+    }
+  ]
+}

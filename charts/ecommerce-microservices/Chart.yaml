@@ -1,0 +1,6 @@
+apiVersion: v2
+name: ecommerce-microservices
+description: Helm chart for deploying the scalable-ecommerce-backend microservices
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
