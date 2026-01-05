@@ -15,7 +15,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "ecommerce.fullname" . }}-api-gateway
+                name: {{ include "ecommerce.fullname" . }}-{{ .Values.serviceName }}
                 port:
                   number: 80
 {{- end }}

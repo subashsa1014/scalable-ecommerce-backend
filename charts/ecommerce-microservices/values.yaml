@@ -36,4 +36,5 @@ env:
   REDIS_URL: "redis://redis:6379"
 
 secrets:
+  # IMPORTANT: Replace with a real secret before deployment using --set secrets.jwtSecret=<your-secret>
   jwtSecret: "REPLACE_WITH_REAL_SECRET"
