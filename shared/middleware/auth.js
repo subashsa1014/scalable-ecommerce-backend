@@ -9,7 +9,12 @@ const authenticate = (req, res, next) => {
       throw new AppError('Authentication token is required', 401);
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_super_secret_jwt_key_change_in_production');
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET environment variable is not set');
+    }
+
+    const decoded = jwt.verify(token, secret);
     req.user = decoded;
     next();
   } catch (error) {
