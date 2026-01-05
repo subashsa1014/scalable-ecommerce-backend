@@ -11,28 +11,47 @@ const app = express();
 
 app.use(express.json());
 
+const DEFAULT_RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
+const DEFAULT_RATE_LIMIT_MAX_REQUESTS = 100;
+
+const sanitizeOrigins = (origins) =>
+  origins
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+    .filter((origin) => {
+      if (origin === '*') return true;
+      try {
+        new URL(origin);
+        return true;
+      } catch {
+        return false;
+      }
+    });
+
 const corsOrigin = process.env.CORS_ORIGIN;
-const allowedOrigins = corsOrigin
-  ? corsOrigin
-      .split(',')
-      .map((origin) => origin.trim())
-      .filter(Boolean)
-  : [];
+const parsedOrigins = corsOrigin ? sanitizeOrigins(corsOrigin.split(',')) : [];
+const corsOriginOption = parsedOrigins.includes('*')
+  ? '*'
+  : parsedOrigins.length
+  ? parsedOrigins
+  : ['http://localhost:3000'];
 
 app.use(
   cors({
-    origin: allowedOrigins.length ? allowedOrigins : ['http://localhost:3000'],
+    origin: corsOriginOption,
   }),
 );
 app.use(helmet());
 app.use(morgan('dev'));
 
-const parsedWindowMs = Number(process.env.RATE_LIMIT_WINDOW_MS);
-const parsedMaxRequests = Number(process.env.RATE_LIMIT_MAX_REQUESTS);
+const parsePositiveNumber = (value, fallback) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+};
 
 const limiter = rateLimit({
-  windowMs: Number.isFinite(parsedWindowMs) && parsedWindowMs > 0 ? parsedWindowMs : 15 * 60 * 1000,
-  max: Number.isFinite(parsedMaxRequests) && parsedMaxRequests > 0 ? parsedMaxRequests : 100,
+  windowMs: parsePositiveNumber(process.env.RATE_LIMIT_WINDOW_MS, DEFAULT_RATE_LIMIT_WINDOW_MS),
+  max: parsePositiveNumber(process.env.RATE_LIMIT_MAX_REQUESTS, DEFAULT_RATE_LIMIT_MAX_REQUESTS),
 });
 app.use(limiter);
 
