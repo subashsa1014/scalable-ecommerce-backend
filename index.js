@@ -24,8 +24,8 @@ app.use(
 app.use(helmet());
 app.use(morgan('dev'));
 
-const windowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10);
-const maxRequests = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10);
+const windowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS ?? `${15 * 60 * 1000}`, 10);
+const maxRequests = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS ?? '100', 10);
 
 const limiter = rateLimit({
   windowMs: Number.isFinite(windowMs) ? windowMs : 15 * 60 * 1000,
