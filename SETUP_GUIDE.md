@@ -279,7 +279,7 @@ PORT=3001
 ## Contributing
 
 1. Create a feature branch: `git checkout -b feature/feature-name`
-2. Commit changes: `git commit -am 'Add feature'
+2. Commit changes: `git commit -am 'Add feature'`
 3. Push to branch: `git push origin feature/feature-name`
 4. Submit pull request
 
