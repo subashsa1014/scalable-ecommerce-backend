@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ecommerce.fullname" . }}-{{ .Values.serviceName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ include "ecommerce.fullname" . }}
+    service: {{ .Values.serviceName }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "ecommerce.fullname" . }}
+      service: {{ .Values.serviceName }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "ecommerce.fullname" . }}
+        service: {{ .Values.serviceName }}
+    spec:
+      containers:
+        - name: {{ .Values.serviceName }}
+          image: "{{ .Values.image.repository }}/{{ .Values.serviceName }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: {{ .Values.env.NODE_ENV | quote }}
+            - name: MONGO_URI
+              value: {{ .Values.env.MONGO_URI | quote }}
+            - name: REDIS_URL
+              value: {{ .Values.env.REDIS_URL | quote }}
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ecommerce.fullname" . }}-secrets
+                  key: jwtSecret
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
