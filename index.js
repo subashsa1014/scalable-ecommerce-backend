@@ -11,10 +11,13 @@ const app = express();
 
 app.use(express.json());
 
-const allowedOrigins = (process.env.CORS_ORIGIN || '')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const corsOrigin = process.env.CORS_ORIGIN;
+const allowedOrigins = corsOrigin
+  ? corsOrigin
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean)
+  : [];
 
 app.use(
   cors({
@@ -24,12 +27,12 @@ app.use(
 app.use(helmet());
 app.use(morgan('dev'));
 
-const windowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS ?? `${15 * 60 * 1000}`, 10);
-const maxRequests = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS ?? '100', 10);
+const parsedWindowMs = Number(process.env.RATE_LIMIT_WINDOW_MS);
+const parsedMaxRequests = Number(process.env.RATE_LIMIT_MAX_REQUESTS);
 
 const limiter = rateLimit({
-  windowMs: Number.isFinite(windowMs) ? windowMs : 15 * 60 * 1000,
-  max: Number.isFinite(maxRequests) ? maxRequests : 100,
+  windowMs: Number.isFinite(parsedWindowMs) && parsedWindowMs > 0 ? parsedWindowMs : 15 * 60 * 1000,
+  max: Number.isFinite(parsedMaxRequests) && parsedMaxRequests > 0 ? parsedMaxRequests : 100,
 });
 app.use(limiter);
 
