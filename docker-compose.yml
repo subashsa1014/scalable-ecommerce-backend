@@ -138,6 +138,24 @@ services:
       - ecommerce-network
     restart: unless-stopped
 
+  # Cart Service
+  cart-service:
+    build:
+      context: ./services/cart-service
+      dockerfile: Dockerfile
+    container_name: ecommerce-cart-service
+    ports:
+      - "3006:3006"
+    environment:
+      PORT: 3006
+      NODE_ENV: development
+      MONGODB_URI: mongodb://admin:admin123@mongodb:27017/ecommerce
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce-network
+    restart: unless-stopped
+
 volumes:
   mongo_data:
   redis_data:
