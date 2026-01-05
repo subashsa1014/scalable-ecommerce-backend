@@ -90,6 +90,8 @@ paths:
   /cart:
     get:
       summary: Get user cart
+      security:
+        - bearerAuth: []
       responses:
         "200":
           description: OK
@@ -99,6 +101,8 @@ paths:
                 $ref: '#/components/schemas/Cart'
     post:
       summary: Add item to cart
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -115,6 +119,8 @@ paths:
   /orders:
     post:
       summary: Create an order
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -130,6 +136,8 @@ paths:
                 $ref: '#/components/schemas/Order'
     get:
       summary: List user orders
+      security:
+        - bearerAuth: []
       responses:
         "200":
           description: OK

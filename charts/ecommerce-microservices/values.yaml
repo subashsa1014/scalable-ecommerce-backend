@@ -1,5 +1,9 @@
 namespace: ecommerce
 
+# serviceName: The name of the microservice to deploy (e.g., api-gateway, user-service)
+# This should be set via --set serviceName=<service-name> during installation
+# serviceName: api-gateway
+
 image:
   repository: yourregistry
   tag: latest
