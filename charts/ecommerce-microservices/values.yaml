@@ -1,0 +1,39 @@
+namespace: ecommerce
+
+image:
+  repository: yourregistry
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+ingress:
+  enabled: true
+  host: example.com
+  annotations: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+env:
+  NODE_ENV: production
+  MONGO_URI: "mongodb://mongo:27017/ecommerce"
+  REDIS_URL: "redis://redis:6379"
+
+secrets:
+  jwtSecret: "REPLACE_WITH_REAL_SECRET"
